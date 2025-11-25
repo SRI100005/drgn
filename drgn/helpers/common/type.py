@@ -19,6 +19,7 @@ from drgn import IntegerLike, Object, Type, TypeKind, TypeMember, sizeof
 __all__ = (
     "enum_type_to_class",
     "member_at_offset",
+    "format_type_declaration",
     "typeof_member",
 )
 
@@ -291,6 +292,24 @@ def member_at_offset(type: Type, offset: IntegerLike) -> str:
                     break
 
     return " or ".join(results)
+
+
+def format_type_declaration(type: Type, *, expand_typedefs: bool = False) -> str:
+    """
+    Format a type declaration, optionally expanding typedefs to show the aliased
+    type definition (e.g., print the full struct body for typedefs).
+    """
+    if not expand_typedefs or type.kind != TypeKind.TYPEDEF:  # type: ignore[comparison-overlap]  # python/mypy#17096
+        return str(type)
+    # Find the alias name and the ultimate underlying type.
+    alias = type.type_name()
+    inner = type.type
+    while inner.kind == TypeKind.TYPEDEF:  # type: ignore[comparison-overlap]  # python/mypy#17096
+        inner = inner.type
+    inner_str = str(inner)
+    # Compose a typedef of the fully expanded underlying type with the alias name.
+    # This mirrors crash's output style for typedefs.
+    return f"typedef {inner_str} {alias}"
 
 
 def typeof_member(type: Type, member: str) -> Type:

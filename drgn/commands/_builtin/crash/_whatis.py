@@ -9,6 +9,7 @@ from typing import Any
 from drgn import ObjectNotFoundError, Program, sizeof
 from drgn.commands import CommandError, argument, drgn_argument
 from drgn.commands.crash import CrashDrgnCodeBuilder, crash_command
+from drgn.helpers.common.type import format_type_declaration
 
 
 @crash_command(
@@ -57,10 +58,11 @@ except TypeError:
             )
             code.print()
         else:
+            decl = format_type_declaration(typ, expand_typedefs=True)
             try:
-                print(f"{typ};\nSIZE: {sizeof(typ)}")
+                print(f"{decl};\nSIZE: {sizeof(typ)}")
             except TypeError:
-                print(f"{typ};")
+                print(f"{decl};")
         return
 
     # Otherwise, try to resolve as variable or function.

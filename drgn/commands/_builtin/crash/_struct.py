@@ -22,6 +22,7 @@ from drgn.commands.crash import (
     crash_command,
     parse_cpuspec,
 )
+from drgn.helpers.common.type import format_type_declaration
 from drgn.helpers.linux.percpu import per_cpu_ptr
 
 
@@ -300,7 +301,8 @@ def _crash_cmd_struct(
                     f"[{obj.address_}] {obj.type_.variable_declaration(sanitized)};{sanitized_comment}"
                 )
         else:
-            sys.stdout.write(f"{type}\nSIZE: {sizeof(type)}\n")
+            decl = format_type_declaration(type, expand_typedefs=True)
+            sys.stdout.write(f"{decl}\nSIZE: {sizeof(type)}\n")
         return
 
     if offset_arg is None:
