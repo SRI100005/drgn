@@ -3460,6 +3460,15 @@ class Type:
         """Get a descriptive full name of this type."""
         ...
 
+    def format(self, expand_typedefs: bool = False) -> str:
+        """
+        Format this type in programming language syntax.
+
+        :param expand_typedefs: Whether to expand typedefs to show their underlying type.
+        :return: Type formatted in programming language syntax.
+        """
+        ...
+
     def variable_declaration(self, name: str) -> str:
         """
         Format a variable declaration with this type.

@@ -629,6 +629,24 @@ static PyObject *DrgnType_variable_declaration(DrgnType *self, PyObject *args,
 	return PyUnicode_FromString(str);
 }
 
+static PyObject *DrgnType_format(DrgnType *self, PyObject *args, PyObject *kwds)
+{
+	static char *keywords[] = {"expand_typedefs", NULL};
+	int expand_typedefs = 0;
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "|p:format", keywords,
+					 &expand_typedefs))
+		return NULL;
+
+	struct drgn_qualified_type qualified_type = expand_typedefs ?
+		drgn_qualified_type_unaliased(DrgnType_unwrap(self)) :
+		DrgnType_unwrap(self);
+	_cleanup_free_ char *str = NULL;
+	struct drgn_error *err = drgn_format_type(qualified_type, &str);
+	if (err)
+		return set_drgn_error(err);
+	return PyUnicode_FromString(str);
+}
+
 static PyObject *DrgnType_is_complete(DrgnType *self)
 {
 	Py_RETURN_BOOL(drgn_type_is_complete(self->type));
@@ -738,6 +756,8 @@ static PyMethodDef DrgnType_methods[] = {
 	 drgn_Type_member_DOC},
 	{"has_member", (PyCFunction)DrgnType_has_member,
 	 METH_VARARGS | METH_KEYWORDS, drgn_Type_has_member_DOC},
+	{"format", (PyCFunction)DrgnType_format, METH_VARARGS | METH_KEYWORDS,
+	 drgn_Type_format_DOC},
 	{"_repr_pretty_", (PyCFunction)repr_pretty_from_str,
 	 METH_VARARGS | METH_KEYWORDS},
 	{},
