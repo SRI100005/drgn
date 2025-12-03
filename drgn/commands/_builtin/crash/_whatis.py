@@ -58,9 +58,9 @@ except TypeError:
             code.print()
         else:
             try:
-                print(f"{typ};\nSIZE: {sizeof(typ)}")
+                print(f"{typ.format(expand_typedefs=True)}\nSIZE: {sizeof(typ)}")
             except TypeError:
-                print(f"{typ};")
+                print(f"{typ.format(expand_typedefs=True)}")
         return
 
     # Otherwise, try to resolve as variable or function.
