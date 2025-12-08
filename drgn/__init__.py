@@ -171,7 +171,6 @@ __all__ = (
     "TypeTemplateParameter",
     "VdsoModule",
     "WantedSupplementaryFile",
-    "_type_format",
     "alignof",
     "cast",
     "container_of",
@@ -342,16 +341,3 @@ def source_location(address: Union[IntegerLike, str], /) -> SourceLocationList:
         return address.prog_.source_location(address)
     else:
         return get_default_prog().source_location(address)
-
-
-def _type_format(typ, expand_typedefs=False):
-    if expand_typedefs and typ.kind == TypeKind.TYPEDEF:
-        unaliased_str = str(typ.unaliased())
-        typedef_name = typ.type_name()
-        return f"typedef {unaliased_str} {typedef_name};"
-    else:
-        return str(typ)
-
-
-# Map the Type.format method to our _type_format function
-Type.format = _type_format
